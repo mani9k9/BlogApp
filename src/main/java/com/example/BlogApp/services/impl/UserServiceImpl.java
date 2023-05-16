@@ -29,13 +29,13 @@ public class UserServiceImpl implements UserService {
     public UserDto updateUser(UserDto userDto, Integer userId) {
 
         User user= this.userRepo.findById(userId).orElseThrow(()-> new ResourceNotFoundException("User","id", userId));
-user.setName(userDto.getName());
-user.setEmail(userDto.getEmail());
-user.setPassword(userDto.getPassword());
-user.setAbout(user.getAbout());
+        user.setName(userDto.getName());
+        user.setEmail(userDto.getEmail());
+        user.setPassword(userDto.getPassword());
+        user.setAbout(user.getAbout());
 
-User updatedUser = this.userRepo.save(user);
-UserDto userDto1 = this.usertoDto(updatedUser);
+        User updatedUser = this.userRepo.save(user);
+        UserDto userDto1 = this.usertoDto(updatedUser);
 
         return userDto1;
     }
