@@ -5,12 +5,17 @@ import com.example.BlogApp.entities.Post;
 import com.example.BlogApp.entities.User;
 import com.example.BlogApp.exception.ResourceNotFoundException;
 import com.example.BlogApp.payloads.PostDto;
+import com.example.BlogApp.payloads.PostResponse;
 import com.example.BlogApp.repositories.CategoryRepo;
 import com.example.BlogApp.repositories.PostRepo;
 import com.example.BlogApp.repositories.UserRepo;
 import com.example.BlogApp.services.PostService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -48,26 +53,53 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Post updatePost(PostDto postDto, Integer postId) {
+    public PostDto updatePost(PostDto postDto, Integer postId) {
 
+        Post post =this.postRepo.findById(postId).orElseThrow(()-> new ResourceNotFoundException("Post","post id", postId));
+         post.setTitle(postDto.getTitle());
+         post.setContent(postDto.getContent());
+         post.setImageName(postDto.getImageName());
 
-
-        return null;
+          Post updatedPost =this.postRepo.save(post);
+        return this.modelMapper.map(updatedPost,PostDto.class);
     }
 
     @Override
     public void deletePost(Integer postId) {
-
+         Post post =this.postRepo.findById(postId).orElseThrow(()-> new ResourceNotFoundException("Post","post id", postId));
+         this.postRepo.delete(post);
     }
 
     @Override
-    public List<Post> getAllPost() {
-        return null;
+    public PostResponse getAllPost(Integer pageNumber, Integer pageSize, String sortBy) {
+
+
+        Pageable p = PageRequest.of(pageNumber,pageSize, Sort.by(sortBy).descending());
+        Page<Post> pagePost = this.postRepo.findAll(p);
+
+        List<Post> allPosts = pagePost.getContent();
+
+        List<PostDto> postDtos = allPosts.stream().map((post) ->this.modelMapper.map(post,PostDto.class)).collect(Collectors.toList());
+
+        PostResponse postResponse = new PostResponse();
+
+        postResponse.setContent(postDtos);
+        postResponse.setPageNumber(pagePost.getNumber());
+        postResponse.setPageSize(pagePost.getSize());
+        postResponse.setTotalElement(pagePost.getTotalElements());
+
+        postResponse.setTotalPages(pagePost.getTotalPages());
+        postResponse.setLastPage(pagePost.isLast());
+
+
+
+        return postResponse;
     }
 
     @Override
-    public Post getPostById(Integer postId) {
-        return null;
+    public PostDto getPostById(Integer postId) {
+        Post post =this.postRepo.findById(postId).orElseThrow(()-> new ResourceNotFoundException("Post","post id", postId));
+        return this.modelMapper.map(post,PostDto.class);
     }
 
     @Override
