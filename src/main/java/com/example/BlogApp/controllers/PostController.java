@@ -8,14 +8,18 @@ import com.example.BlogApp.payloads.PostResponse;
 import com.example.BlogApp.services.FileService;
 import com.example.BlogApp.services.PostService;
 import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 @RestController
@@ -108,11 +112,27 @@ public ResponseEntity<List<PostDto>> searchPostByTitle(
             @RequestParam("image")MultipartFile image,
             @PathVariable Integer postId
             ) throws IOException {
-        String fileName = this.fileService.uploadImage(path, image);
+
         PostDto postDto  = this.postService.getPostById(postId);
+
+        String fileName = this.fileService.uploadImage(path, image);
         postDto.setImageName(fileName);
         PostDto updatePost = this.postService.updatePost(postDto,postId);
 
         return new ResponseEntity<PostDto>(updatePost,HttpStatus.OK);
+    }
+
+    //method to serve file
+
+    @GetMapping(value = "post/image/{imageName}",produces = MediaType.IMAGE_JPEG_VALUE)
+    public void downloadImage(
+            @PathVariable("imageName") String imageName,
+            HttpServletResponse response
+    ) throws IOException{
+
+        InputStream resource = this.fileService.getResource(path,imageName);
+        response.setContentType(MediaType.IMAGE_JPEG_VALUE);
+        StreamUtils.copy(resource,response.getOutputStream());
+
     }
 }
