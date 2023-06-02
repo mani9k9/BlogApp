@@ -3,6 +3,8 @@ package com.example.BlogApp.controllers;
 import com.example.BlogApp.Security.JwtTokenHelper;
 import com.example.BlogApp.payloads.JwtAuthRequest;
 import com.example.BlogApp.payloads.JwtAuthResponse;
+import com.example.BlogApp.payloads.UserDto;
+import com.example.BlogApp.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +26,9 @@ public class AuthController {
 
     @Autowired
     private JwtTokenHelper helper;
+
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private UserDetailsService userDetailsService;
@@ -56,5 +61,13 @@ public class AuthController {
             // TODO: handle
             System.out.println("Invalid Credentials");
         }
+    }
+
+    //register new User Api
+
+    @PostMapping("/register")
+    public ResponseEntity<UserDto> registerUser(@RequestBody UserDto userDto){
+        UserDto registeredUser = this.userService.registerNewUser(userDto);
+        return new ResponseEntity<UserDto>(registeredUser,HttpStatus.CREATED);
     }
 }

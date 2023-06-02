@@ -8,6 +8,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @NoArgsConstructor
 @Setter
 @Getter
@@ -26,4 +29,5 @@ public class UserDto {
     @NotEmpty
     private String about;
 
+    private Set<RoleDto> roles = new HashSet<>();
 }

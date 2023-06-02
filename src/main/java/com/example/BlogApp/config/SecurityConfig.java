@@ -32,14 +32,14 @@ public class SecurityConfig {
 
 
 
-   public static final String[] PUBLIC_URLS = {
+  /* public static final String[] PUBLIC_URLS = {
             "/api/v1/login",
             "/v3/api-docs",
             "/swagger-resources/**",
             "/swagger-ui/**",
             "/webjars/**"
     };
-
+*/
    @Autowired
     private CustomUserDetailService customUserDetailService;
 
@@ -58,11 +58,11 @@ public class SecurityConfig {
 
         http.
                 csrf().disable()
-                .authorizeHttpRequests()/*
-                .antMatchers(PUBLIC_URLS)
+                .authorizeRequests()
+                .requestMatchers("/api/v1/auth/**")
                 .permitAll()
-                .antMatchers(HttpMethod.GET)
-                .permitAll()*/
+                .requestMatchers(HttpMethod.GET)
+                .permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()
