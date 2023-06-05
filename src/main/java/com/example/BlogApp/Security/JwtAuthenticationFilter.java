@@ -46,7 +46,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             } catch (ExpiredJwtException c) {
                 System.out.println("Jwt has expired");
             } catch (MalformedJwtException e) {
-                System.out.println("Invali jwt");
+                System.out.println("Invalid jwt");
             }
         } else {
             System.out.println("JWT token does not begin with bearer");

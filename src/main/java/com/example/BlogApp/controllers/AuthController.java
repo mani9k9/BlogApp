@@ -39,7 +39,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<JwtAuthResponse> createToken(
-            @RequestBody JwtAuthRequest jwtAuthRequest){
+            @RequestBody JwtAuthRequest jwtAuthRequest) throws Exception {
 
         this.authenticate(jwtAuthRequest.getUserName(), jwtAuthRequest.getPassword());
 
@@ -52,7 +52,7 @@ public class AuthController {
     }
 
 
-    private void authenticate(String userName, String password) {
+    private void authenticate(String userName, String password) throws Exception {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userName, password);
         try {
             this.authenticationManager.authenticate(authenticationToken);
@@ -60,6 +60,7 @@ public class AuthController {
         } catch (BadCredentialsException e) {
             // TODO: handle
             System.out.println("Invalid Credentials");
+            throw  new Exception("Invalid UserName or password");
         }
     }
 
